@@ -5,43 +5,31 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-require(faker)
 
-#[City, User, Comment, PrivateMessage, UserPrivateMessage, Tag, Gossip, GossipTag].map {|tab| tab.destroy_all}
-#['cities', 'users', 'comments', 'private_messages', 'user_private_messages', 'tags', 'gossips', 'gossip-tags'].map {|tab| ActiveRecord::Base.connection.reset_pk_sequence!(tab)}
+require 'faker'
 
-#city_list = [["Paris","75000"],["Lyon","69000"],["Marseille","13000"],["Nice","06000"],["Bordeaux","33000"],["Strasbourg","67000"],["Rennes","35000"],["Toulouse","31000"],["Caen","14000"],["Toulon","83000"]]
-
-#tag_list = ['Humour', 'evil', 'event', 'people', 'business', 'sport']
-
-10.times do |i|
-  City.create(name: city_list[i][0], zip_code:city_list[i][1])
+20.times do |i|
+    city = City.create!(name: Faker::Address.city)
+    puts "cities created" if i == 19
 end
 
-#Création User anonyme
-User.create(first_name: 'Anonymous', last_name: 'Anonymous', age:'50', email: 'anonymous@anonymous.com' , description: 'je suis un anonyme anonyme', city_id: 1, password: 'password1')
-
-20.times do
-  User.create(first_name:Faker::Name.first_name, last_name:Faker::Name.last_name, age:rand(18..90), email:Faker::Internet.email , description:Faker::Lorem.sentences(number: 2).join(" "), city_id:rand(1..City.count), password: ['password', (User.count+1).to_s].join)
+21.times do |i| 
+    usr = User.create!(first_name: Faker::Name.first_name, last_name: Faker::Name.last_name, description: Faker::Lorem.paragraph, email: Faker::Internet.email, age: rand(18..99), city_id: rand(1..20))
+    puts "users created" if i == 20
 end
 
-tag_list.map {|tag| Tag.create(title: tag)}
-
-50.times do
-  created_gossip = Gossip.create(title:Faker::Lorem.words(number: 2).join(" "), content:Faker::Lorem.sentences(number: 2).join(" "), user_id:rand(1..User.count))
-  rand(0..3).times do
-    GossipTag.create(gossip_id: created_gossip.id, tag_id:rand(1..5))
-  end
+100.times do |i| 
+    gossip = Gossip.create!(title: Faker::Lorem.sentence, content: Faker::Lorem.paragraph(sentence_count:300), user_id: rand(1..20))
+    puts "gossips created" if i == 99
 end
 
-20.times do
-  Comment.create(content:Faker::Lorem.sentences(number: 1).join(), gossip_id:rand(1..Gossip.count) , user_id:rand(1..User.count))
+10.times do |i| 
+    tag = Tag.create!(title: Faker::Lorem.word)
+    puts "tags created" if i == 9
 end
 
-40.times do
-  choose_which_author = [Faker::ChuckNorris.fact, Faker::Quote.yoda]
-  created_pm = PrivateMessage.create(content:choose_which_author[rand(0..1)], sender_id:rand(1..User.count))
-  rand(1..3).times do
-    UserPrivateMessage.create(received_message_id: created_pm.id, recipient_id: rand(1..User.count))
-  end
+150.times do |i| 
+    join = JoinGossipTag.create!(gossip_id: rand(1..50), tag_id: rand(1..10))
+    puts "join_gossip_tags created" if i == 149
 end
+
